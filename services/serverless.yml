@@ -1,0 +1,117 @@
+service: boilerplace-api
+
+package:
+  individually: true
+
+plugins:
+  - serverless-bundle 
+  - serverless-offline
+  - serverless-dotenv-plugin 
+
+custom:
+  stage: ${opt:stage, self:provider.stage}
+
+  sstApp: ${self:custom.stage}-boilerplate-infra 
+  cognitoArn: REPLACE_COGNITO_ARN
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: dev
+  region: REPLACE_REGION
+  environment:
+    Bucket: !ImportValue "${self:custom.sstApp}-AttachmentsBucketName"
+    ImageTable: !ImportValue "${self:custom.sstApp}-ImageTable"
+    CategoryTable: !ImportValue "${self:custom.sstApp}-CategoryTable"
+    
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Scan
+        - dynamodb:Query
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+        - dynamodb:DescribeTable
+        - s3:PutObject
+        - s3:GetObject
+        - s3:PutObjectAcl
+
+      Resource: "arn:aws:dynamodb:REPLACE_REGION:*:*"
+
+functions:
+  image:
+    handler: functions/image.main
+    events:
+      - http:
+          path: image
+          method: get
+          cors: true
+          authorizer:
+            name: custom_auth
+            arn: ${self:custom.cognitoArn}
+      - http:
+          path: image
+          method: post
+          cors: true
+          authorizer:
+            name: custom_auth
+            arn: ${self:custom.cognitoArn}
+      - http:
+          path: image/{id}
+          method: delete
+          cors: true
+          authorizer:
+            name: custom_auth
+            arn: ${self:custom.cognitoArn}
+  category:
+    handler: functions/category.main
+    events:
+      - http:
+          path: category
+          method: get
+          cors: true
+          authorizer:
+            name: custom_auth
+            arn: ${self:custom.cognitoArn}
+      - http:
+          path: category
+          method: post
+          cors: true
+          authorizer:
+            name: custom_auth
+            arn: ${self:custom.cognitoArn}
+      - http:
+          path: category/{id}
+          method: delete
+          cors: true
+          authorizer:
+            name: custom_auth
+            arn: ${self:custom.cognitoArn}
+    # settings
+  upload:
+    handler: functions/upload.main
+    events:
+      - http:
+          path: upload
+          method: post
+          cors: true
+          authorizer:
+            name: custom_auth
+            arn: ${self:custom.cognitoArn}
+      - http:
+          path: upload
+          method: put
+          cors: true
+          authorizer:
+            name: custom_auth
+            arn: ${self:custom.cognitoArn}
+    # upload
+
+# Create our resources with separate CloudFormation templates
+resources:
+  # API Gateway Errors
+  - ${file(resources/api-gateway-errors.yml)}
+  # Cognito Identity Pool Policy
+  - ${file(resources/cognito-policy.yml)}

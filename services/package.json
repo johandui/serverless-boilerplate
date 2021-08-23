@@ -1,0 +1,20 @@
+{
+  "name": "boilerplate-api",
+  "version": "0.0.1",
+  "private": "true",
+  "scripts": {
+    "deploy": "serverless deploy",
+    "test": "serverless-bundle test"
+  },
+  "devDependencies": {
+    "aws-sdk": "^2.786.0",
+    "serverless-bundle": "3.2.0",
+    "serverless-dotenv-plugin": "^2.1.1",
+    "serverless-offline": "^5.3.3"
+  },
+  "dependencies": {
+    "axios": "^0.21.1",
+    "dynamoose": "^2.8.1",
+    "uuid": "^7.0.3"
+  }
+}

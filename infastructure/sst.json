@@ -1,0 +1,6 @@
+{
+  "name": "boilerplate-infra",
+  "type": "@serverless-stack/resources",
+  "stage": "dev",
+  "region": "REPLACE_REGION"
+}
