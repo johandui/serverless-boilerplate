@@ -31,10 +31,10 @@ Create Init user with shellscript
 ```sh
 cd ../demo
 chmod +x ./register.sh
+./register.sh
 ```
 Get token 
 ```sh
-./register.sh
 chmod +x ./login.sh
 ./login.sh
 ```
